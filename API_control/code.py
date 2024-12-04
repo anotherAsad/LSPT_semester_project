@@ -13,6 +13,7 @@ async def root():
 async def read_item(item_id: int, q: str = None):
     return {"item_id": item_id, "q": q}
 
+# Schemas
 class Item(BaseModel):
     name: str
     description: str = None
