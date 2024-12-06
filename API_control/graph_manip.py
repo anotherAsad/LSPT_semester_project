@@ -143,6 +143,7 @@ def get_subgraph(base_url, n):
     res = Graph()
     urls = res.new_vp("string")
     rank = res.new_vp("float")
+    text = res.new_vp("string")
     parent = None
     
     while queue:
@@ -155,6 +156,7 @@ def get_subgraph(base_url, n):
                 res.add_edge(parent, new_v)
             urls[new_v] = node_url[v]
             rank[new_v] = page_rank[v]
+            text[new_v] = node_text[v]
             for child in g.get_out_neighbors(v):
                 queue.append((child, d + 1))
                 parent = new_v
