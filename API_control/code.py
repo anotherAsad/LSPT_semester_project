@@ -8,6 +8,9 @@ import graph_manip
 import time
 import threading
 
+import asyncio
+import uvicorn
+
 app = FastAPI()
 
 pagerank_call_count = 0
@@ -80,7 +83,7 @@ class evaluation_payload(BaseModel):
 	click_count: list
 
 @app.post("/evaluation/update_metadata")
-async def update_metadata(evaluation_payload)
+async def update_metadata(evaluation_payload):
 	graph_manip.update_mutex.acquire()		# acquire mutex lock
 	graph_manip.update_metadata(evaluation_payload.json())
 	graph_manip.update_mutex.release()		# release mutex lock
@@ -207,11 +210,26 @@ print("Doing Good. Will start pagerank thread")
 
 ################################################################################################################
 # Main Routine
-def main_routine():
-	while True:
+shutdown = False
+
+async def pagerank_routine():
+	while not shutdown:
 		update_pagerank()
-		time.sleep(60)
+		await asyncio.sleep(10)
 
-t1 = threading.Thread(target=main_routine)
+async def run_server():
+	global shutdown
+	
+	config = uvicorn.Config("code:app", port=1234, log_level="info", host="lspt-link-analysis.cs.rpi.edu", reload=True)
+	server = uvicorn.Server(config)
+	await server.serve()
 
-t1.start()
+	shutdown = True
+
+async def main():
+    server_task = asyncio.create_task(run_server())
+    action_task = asyncio.create_task(pagerank_routine())
+    await asyncio.gather(server_task, action_task)
+
+if __name__ == "__main__":
+    asyncio.run(main())
