@@ -10,24 +10,25 @@ app = FastAPI()
 
 ######################################## UI/UX INTERFACE ########################################
 def get_graph_as_json():
-	return {"base_node": []}
+	json_graph = graph_manip.convert_graph_to_JSON(graph_manip.g)
+	return json_graph
 
 @app.get("/uiux/graph")
 async def return_graph():
 	return get_graph_as_json()
 
-@app.get("/uiux/subgraph")
-async def return_subgraph():
-	return get_graph_as_json().base_node
+# TODO: implement sub graphing
+@app.get("/uiux/subgraph/{url}")
+async def return_subgraph(url):
+	return get_graph_as_json()
 
 ####################################### RANKING INTERFACE #######################################
-def get_score(url):
-	return 0.0
-
 @app.get("/ranking/score/{url}")
 async def return_score(url):
-	return get_score(url)
-
+	if (url in graph_manip.vert_map) and (graph_manip.page_rank is not None):
+		return graph_manip.page_rank[graph_manip.vert_map[url]]
+	else:
+		return -1
 ###################################### CRAWLING INTERFACE #######################################
 
 # Node Payload schema
@@ -59,46 +60,67 @@ async def update_metadata(evaluation_payload):
 # Report metric is called by US.
 #################################################################################################
 
+# Updates page rank
+def update_pagerank():
+	# acquire mutex
+	graph_manip.update_mutex.acquire()
 
+	graph_manip.page_rank = graph_manip.pagerank(graph_manip.g)
+
+	# update the text that is to be shown in graph visualization
+	for node in graph_manip.g.vertices():
+		graph_manip.node_text[node] = f"{graph_manip.node_url[node]}: {graph_manip.page_rank[node]:.3f}"
+
+	# release mutex
+	graph_manip.update_mutex.release()
+
+	return
+
+#################################################################################################
 #testing and driver code. Will ~not~ be used in the final product.
 payload = '[{"url":"www.google.com","child_nodes":["www.abc.com","www.def.com"]},{"url":"www.rpi.edu","child_nodes":["www.google.com","www.abc.com"]}]'
 
 graph_manip.add_node(payload)
 
+update_pagerank()
+
 graph_manip.graph_tool.draw.graph_draw(
-				graph_manip.g, 
-				edge_pen_width=5,
-				vertex_text=graph_manip.node_url, 
-				vertex_aspect=1, 
-				vertex_text_position=1, 
-				vertex_text_color='black',
-				vertex_font_family='sans',
-				vertex_font_size=11,
-				vertex_color=None,
-				vertex_size=20,
-				output="mygraph.png"
-				)
+	graph_manip.g, 
+	edge_pen_width=5,
+	vertex_text=graph_manip.node_text, 
+	vertex_aspect=1, 
+	vertex_text_position=1, 
+	vertex_text_color='black',
+	vertex_font_family='sans',
+	vertex_font_size=11,
+	vertex_color=None,
+	vertex_size=20,
+	output="mygraph.png"
+)
 
 graph_manip.remove_node("www.abc.com")
 
+update_pagerank()
+
 graph_manip.graph_tool.draw.graph_draw(
-				graph_manip.g, 
-				edge_pen_width=5,
-				vertex_text=graph_manip.node_url, 
-				vertex_aspect=1, 
-				vertex_text_position=1, 
-				vertex_text_color='black',
-				vertex_font_family='sans',
-				vertex_font_size=11,
-				vertex_color=None,
-				vertex_size=20,
-				output="delgraph.png"
+	graph_manip.g, 
+	edge_pen_width=5,
+	vertex_text=graph_manip.node_text, 
+	vertex_aspect=1, 
+	vertex_text_position=1, 
+	vertex_text_color='black',
+	vertex_font_family='sans',
+	vertex_font_size=11,
+	vertex_color=None,
+	vertex_size=20,
+	output="delgraph.png"
 )
 
-pr = graph_manip.pagerank(graph_manip.g)
+if graph_manip.page_rank is not None:
+	print("\nPageRank scores:")
+	for v in graph_manip.g.vertices():
+		print(f"{graph_manip.node_url[v]}: {graph_manip.page_rank[v]}, {v}")
 
-print("\nPageRank scores:")
-for v in graph_manip.g.vertices():
-    print(f"{graph_manip.node_url[v]}: {pr[v]}")
+
 				
 print("Doing good")

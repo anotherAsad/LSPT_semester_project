@@ -1,7 +1,10 @@
 #! /usr/bin/python3
 
-from graph_tool.all import Graph, graph_tool, pagerank
+from graph_tool.all import Graph, graph_tool, find_vertex, pagerank
+import threading
 import json
+
+update_mutex = threading.Lock()
 
 '''
 example payload:
@@ -21,7 +24,18 @@ example payload:
 #create Graph as global so it is accessible everywhere
 g = Graph(directed=True)
 vert_map = dict() #dict of ["URL": vertex_index]. This is so I can search the indices by url in less than O(N)
-node_url = g.new_vp("string") #attaches the URL to the vertices. This is useful for displaying the URL
+node_url = g.new_vp("string") # attaches the URL to the vertices. This is useful for displaying the URL
+page_rank = None
+node_text = g.new_vp("string")
+
+# returns the vertex
+def find_in_graph(url):
+    list_of_nodes = find_vertex(g, node_url, url)
+
+    if len(list_of_nodes) != 1:
+        return None
+    else:
+        return list_of_nodes[0]
 
 #adds specified node and connects it to children.
 #also adds edges between existing nodes and creates nodes that aren't there.
@@ -42,6 +56,7 @@ node_url = g.new_vp("string") #attaches the URL to the vertices. This is useful 
 ]
 
 '''
+
 def add_node(payload):
     payload_list = json.loads(payload)
 
@@ -59,35 +74,48 @@ def add_node(payload):
         url = item["url"]
         assert isinstance(url, str), f"ERR: graph_manip.add_node() expected `url` as string"
 
-        if url not in vert_map:
-            #add to map
-            new_node = g.add_vertex()
-            vert_map[url] = new_node
-            node_url[new_node] = url
+        # get node from url
+        parent_node = find_in_graph(url)
+
+        if parent_node == None:
+            #add to graph
+            parent_node = g.add_vertex()
+            node_url[parent_node] = url
 
         # Iterate over the children and add them to the graph
         for child in item["child_nodes"]:
             assert isinstance(child, str), f"ERR: graph_manip.add_node() expected strings in `child_nodes`" 
             #if child not in graph yet, create a node
-            if child not in vert_map:
-                new_node = g.add_vertex()
-                vert_map[child] = new_node
-                node_url[new_node] = child
+            child_node = find_in_graph(child)
+
+            if child_node == None:
+                child_node = g.add_vertex()
+                node_url[child_node] = child
 
             # Create the required edge
-            g.add_edge(vert_map[url], vert_map[child])
+            g.add_edge(parent_node, child_node)
 
 	# success
     return 0
 
 #removes specified node and all connecting edges
 def remove_node(url):
-    if url in vert_map:
-        g.remove_vertex(vert_map[url])
-        vert_map.pop(url)
+    node = find_in_graph(url)
+
+    if node != None:
+        g.remove_vertex(node)
         return 0 #success
+        
     return -1 #failure
     
+# converts the graph to json
+def convert_graph_to_JSON(g):
+    graph_data = {
+        "nodes": [{"id": int(v)} for v in g.vertices()],
+        "edges": [{"source": int(e.source()), "target": int(e.target())} for e in g.edges()]
+    }
+
+    return graph_data
     
 #testing and driver code. Will ~not~ be used in the final product.
 if __name__ == '__main__':
