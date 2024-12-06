@@ -105,7 +105,7 @@ def remove_node(url):
     if node != None:
         g.remove_vertex(node)
         return 0 #success
-        
+
     return -1 #failure
     
 # converts the graph to json
@@ -122,34 +122,35 @@ if __name__ == '__main__':
     payload = '[{"url":"www.google.com","child_nodes":["www.abc.com","www.def.com"]},{"url":"www.rpi.edu","child_nodes":["www.google.com","www.abc.com"]}]'
 
     add_node(payload)
-    graph_tool.draw.graph_draw(
-                    g, 
-                    edge_pen_width=5,
-                    vertex_text=node_url, 
-                    vertex_aspect=1, 
-                    vertex_text_position=1, 
-                    vertex_text_color='black',
-                    vertex_font_family='sans',
-                    vertex_font_size=11,
-                    vertex_color=None,
-                    vertex_size=20,
-                    output="mygraph.png"
-                   )
+
+    graph_manip.graph_tool.draw.graph_draw(
+        graph_manip.g, 
+        edge_pen_width=5,
+        vertex_text=graph_manip.node_text, 
+        vertex_aspect=1, 
+        vertex_text_position=1, 
+        vertex_text_color='black',
+        vertex_font_family='sans',
+        vertex_font_size=11,
+        vertex_color=None,
+        vertex_size=20,
+        output="mygraph.png"
+    )
 
     remove_node("www.abc.com")
 
-    graph_tool.draw.graph_draw(
-                    g, 
-                    edge_pen_width=5,
-                    vertex_text=node_url, 
-                    vertex_aspect=1, 
-                    vertex_text_position=1, 
-                    vertex_text_color='black',
-                    vertex_font_family='sans',
-                    vertex_font_size=11,
-                    vertex_color=None,
-                    vertex_size=20,
-                    output="delgraph.png"
+    graph_manip.graph_tool.draw.graph_draw(
+        graph_manip.g, 
+        edge_pen_width=5,
+        vertex_text=graph_manip.node_text, 
+        vertex_aspect=1, 
+        vertex_text_position=1, 
+        vertex_text_color='black',
+        vertex_font_family='sans',
+        vertex_font_size=11,
+        vertex_color=None,
+        vertex_size=20,
+        output="mygraph.png"
     )
                 
     print("Doing good")
