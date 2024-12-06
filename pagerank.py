@@ -1,9 +1,7 @@
 # Using an example graph for now to test PageRank, will need to be replaced with our actual webgraph
 
-# TO DO: make an example graph with the data that we would be storing (url, outlinks, pagerank score, metadata)
-#        test graph-tool's pagerank function on it and see if that works fine
-
 from graph_tool.all import Graph, pagerank
+from time import time
 
 g = Graph()
 url = g.new_vertex_property("string")
@@ -22,7 +20,11 @@ e2 = g.add_edge(v3,v1)
 e3 = g.add_edge(v3,v4)
 e4 = g.add_edge(v4,v1)
 
+# can add mutexes around this function or something, if we don't want to lock the entire graph then
+# we probably have to implement pagerank ourselves
+start = time()
 pr = pagerank(g)
+print(f"PageRank time taken: {time()-start}")
 
 print("Vertices:")
 for v in g.vertices():
