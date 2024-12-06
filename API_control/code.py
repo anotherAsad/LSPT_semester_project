@@ -3,6 +3,9 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+import json
+import graph_manip
+
 app = FastAPI()
 
 ######################################## UI/UX INTERFACE ########################################
@@ -33,7 +36,7 @@ class node_payload:
 	child_nodes: list
 
 @app.post("/crawling/add_nodes")
-async def receive_node_payload(node_payload):
+async def update_link_graph(node_payload):
 	# TODO: Write code here to pass the schema on
 	return True
 
@@ -48,32 +51,54 @@ class evaluation_payload(BaseModel):
 	clicks: float
 	time: float
 
-@app.post("/evaluation/update_link_graph")
-async def update_link_graph(evaluation_payload):
+@app.post("/evaluation/update_metadata")
+async def update_metadata(evaluation_payload):
 	# TODO: Write code here to pass the schema on
 	return True
 
 # Report metric is called by US.
 #################################################################################################
 
-@app.get("/")
-async def root():
-	return {"message": "Hello World"}
 
-@app.get("/items/{item_id}")
-async def read_item(item_id: int, q: str = None):
-	return {"item_id": item_id, "q": q}
+#testing and driver code. Will ~not~ be used in the final product.
+payload = '[{"url":"www.google.com","child_nodes":["www.abc.com","www.def.com"]},{"url":"www.rpi.edu","child_nodes":["www.google.com","www.abc.com"]}]'
 
-# Schemas
-class Item(BaseModel):
-	name: str
-	description: str = None
-	price: float
-	tax: float = None
+graph_manip.add_node(payload)
 
-@app.post("/items/")
-async def create_item(item: Item):
-	print("Item posted")
-	print(f"{item.name}, {item.description}, {item.price}")
-	return item
-	
+graph_manip.graph_tool.draw.graph_draw(
+				graph_manip.g, 
+				edge_pen_width=5,
+				vertex_text=graph_manip.node_url, 
+				vertex_aspect=1, 
+				vertex_text_position=1, 
+				vertex_text_color='black',
+				vertex_font_family='sans',
+				vertex_font_size=11,
+				vertex_color=None,
+				vertex_size=20,
+				output="mygraph.png"
+				)
+
+graph_manip.remove_node("www.abc.com")
+
+graph_manip.graph_tool.draw.graph_draw(
+				graph_manip.g, 
+				edge_pen_width=5,
+				vertex_text=graph_manip.node_url, 
+				vertex_aspect=1, 
+				vertex_text_position=1, 
+				vertex_text_color='black',
+				vertex_font_family='sans',
+				vertex_font_size=11,
+				vertex_color=None,
+				vertex_size=20,
+				output="delgraph.png"
+)
+
+pr = graph_manip.pagerank(graph_manip.g)
+
+print("\nPageRank scores:")
+for v in graph_manip.g.vertices():
+    print(f"{graph_manip.node_url[v]}: {pr[v]}")
+				
+print("Doing good")
