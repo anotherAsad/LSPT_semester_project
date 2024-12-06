@@ -23,27 +23,28 @@ async def return_subgraph(url):
 	return get_graph_as_json()
 
 ####################################### RANKING INTERFACE #######################################
-@app.get("/ranking/score/{url}")
+@app.get("/ranking/{url}")
 async def return_score(url):
-	if (url in graph_manip.vert_map) and (graph_manip.page_rank is not None):
-		return graph_manip.page_rank[graph_manip.vert_map[url]]
-	else:
-		return -1
+	node = graph_manip.find_in_graph(url)
+	return_json = {"pageRank": None, "inLinkCount": None, "outLinkCount": None}
+
+	if (node is not None) and (graph_manip.page_rank is not None):
+		return_json["pageRank"] = graph_manip.page_rank[node]
+		return_json["inLinkCount"] = int(graph_manip.g.get_in_degrees([node])[0])
+		return_json["outLinkCount"] = int(graph_manip.g.get_out_degrees([node])[0])
+		print(return_json)
+
+	return return_json
 ###################################### CRAWLING INTERFACE #######################################
-
-# Node Payload schema
-class node_payload:
-	url: str
-	child_nodes: list
-
 @app.post("/crawling/add_nodes")
 async def update_link_graph(node_payload):
+	print(node_payload)
 	# TODO: Write code here to pass the schema on
 	return True
 
 @app.get("/crawling/remove_node/{url}")
 async def remove_node(url):
-	return True
+	return {"node_removed": graph_manip.remove_node(url)}
 
 ##################################### EVALUATION INTERFACE ######################################
 # Schema for Evaluation Team
@@ -82,6 +83,8 @@ payload = '[{"url":"www.google.com","child_nodes":["www.abc.com","www.def.com"]}
 
 graph_manip.add_node(payload)
 
+graph_manip.add_node('{"url":"www.boogle.com"}')
+
 update_pagerank()
 
 graph_manip.graph_tool.draw.graph_draw(
@@ -119,7 +122,7 @@ graph_manip.graph_tool.draw.graph_draw(
 if graph_manip.page_rank is not None:
 	print("\nPageRank scores:")
 	for v in graph_manip.g.vertices():
-		print(f"{graph_manip.node_url[v]}: {graph_manip.page_rank[v]}, {v}")
+		print(f"{graph_manip.node_url[v]}: {graph_manip.page_rank[v]}, {graph_manip.g.get_in_degrees([v])[0]}")
 
 
 				

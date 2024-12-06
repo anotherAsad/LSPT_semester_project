@@ -82,6 +82,10 @@ def add_node(payload):
             parent_node = g.add_vertex()
             node_url[parent_node] = url
 
+        # case of stray node with no children
+        if not "child_nodes" in item:
+            continue
+
         # Iterate over the children and add them to the graph
         for child in item["child_nodes"]:
             assert isinstance(child, str), f"ERR: graph_manip.add_node() expected strings in `child_nodes`" 
@@ -104,14 +108,14 @@ def remove_node(url):
 
     if node != None:
         g.remove_vertex(node)
-        return 0 #success
+        return True #success
 
-    return -1 #failure
+    return False #failure
     
 # converts the graph to json
 def convert_graph_to_JSON(g):
     graph_data = {
-        "nodes": [{"id": int(v)} for v in g.vertices()],
+        "nodes": [{"id": int(v), "url": node_url[v], "page_rank": page_rank[v]} for v in g.vertices()],
         "edges": [{"source": int(e.source()), "target": int(e.target())} for e in g.edges()]
     }
 
@@ -152,5 +156,3 @@ if __name__ == '__main__':
         vertex_size=20,
         output="mygraph.png"
     )
-                
-    print("Doing good")
