@@ -133,6 +133,12 @@ async def print_scores():
 
 	return True
 
+@app.get("/print_stats")
+async def print_scores():
+	print(f"pagerank_call_count: {pagerank_call_count}")
+
+	return True
+
 # Report metric is called by US.
 #################################################################################################
 
