@@ -4,7 +4,6 @@ from graph_tool.all import Graph, graph_tool, find_vertex, pagerank
 import threading
 import json
 
-update_mutex = threading.Lock()
 
 '''
 example payload:
@@ -23,10 +22,10 @@ example payload:
 
 #create Graph as global so it is accessible everywhere
 g = Graph(directed=True)
-vert_map = dict() #dict of ["URL": vertex_index]. This is so I can search the indices by url in less than O(N)
 node_url = g.new_vp("string") # attaches the URL to the vertices. This is useful for displaying the URL
 page_rank = None
 node_text = g.new_vp("string")
+update_mutex = threading.Lock()
 
 # returns the vertex
 def find_in_graph(url):
@@ -102,7 +101,7 @@ def add_node(payload):
 	# success
     return 0
 
-#removes specified node and all connecting edges
+# removes specified node and all connecting edges
 def remove_node(url):
     node = find_in_graph(url)
 
@@ -111,6 +110,11 @@ def remove_node(url):
         return True #success
 
     return False #failure
+
+# Is a stub function
+def update_metadata(payload):
+    # TODO: Write actual code
+    return False
     
 # converts the graph to json
 def convert_graph_to_JSON(g):

@@ -5,8 +5,12 @@ from pydantic import BaseModel
 
 import json
 import graph_manip
+import time
+import threading
 
 app = FastAPI()
+
+pagerank_call_count = 0
 
 ######################################## UI/UX INTERFACE ########################################
 def get_graph_as_json():
@@ -15,16 +19,26 @@ def get_graph_as_json():
 
 @app.get("/uiux/graph")
 async def return_graph():
-	return get_graph_as_json()
+	graph_manip.update_mutex.acquire()		# acquire mutex lock
+	ret_val = get_graph_as_json()
+	graph_manip.update_mutex.release()		# release mutex lock
+	
+	return ret_val
 
 # TODO: implement sub graphing
 @app.get("/uiux/subgraph/{url}")
 async def return_subgraph(url):
-	return get_graph_as_json()
+	graph_manip.update_mutex.acquire()		# acquire mutex lock
+	ret_val = get_graph_as_json()
+	graph_manip.update_mutex.release()		# release mutex lock
+	
+	return ret_val
 
 ####################################### RANKING INTERFACE #######################################
 @app.get("/ranking/{url}")
 async def return_score(url):
+	graph_manip.update_mutex.acquire()		# acquire mutex lock
+
 	node = graph_manip.find_in_graph(url)
 	return_json = {"pageRank": None, "inLinkCount": None, "outLinkCount": None}
 
@@ -34,28 +48,86 @@ async def return_score(url):
 		return_json["outLinkCount"] = int(graph_manip.g.get_out_degrees([node])[0])
 		print(return_json)
 
+	graph_manip.update_mutex.release()		# release mutex lock
+
 	return return_json
 ###################################### CRAWLING INTERFACE #######################################
+class crawling_payload(BaseModel):
+	url: str
+	child_nodes: list
+
 @app.post("/crawling/add_nodes")
-async def update_link_graph(node_payload):
-	print(node_payload)
-	# TODO: Write code here to pass the schema on
-	return True
+async def update_link_graph(add_node_payload: crawling_payload):
+	graph_manip.update_mutex.acquire()		# acquire mutex lock
+	# call the wrapped function
+	graph_manip.add_node(add_node_payload.json())
+	graph_manip.update_mutex.release()		# release mutex lock
+
+	return {"nodes_added": True}
 
 @app.get("/crawling/remove_node/{url}")
 async def remove_node(url):
-	return {"node_removed": graph_manip.remove_node(url)}
+	graph_manip.update_mutex.acquire()		# acquire mutex lock
+	result = graph_manip.remove_node(url)
+	graph_manip.update_mutex.release()		# release mutex lock
+
+	return {"node_removed": result}
 
 ##################################### EVALUATION INTERFACE ######################################
 # Schema for Evaluation Team
 class evaluation_payload(BaseModel):
-	url: str
-	clicks: float
-	time: float
+	list_of_clicked_links: list
+	click_count: list
 
 @app.post("/evaluation/update_metadata")
-async def update_metadata(evaluation_payload):
-	# TODO: Write code here to pass the schema on
+async def update_metadata(evaluation_payload)
+	graph_manip.update_mutex.acquire()		# acquire mutex lock
+	graph_manip.update_metadata(evaluation_payload.json())
+	graph_manip.update_mutex.release()		# release mutex lock
+
+	return True
+
+# Report metric is called by US.
+
+##################################### LINK ANALYSIS INTERFACE ######################################
+@app.get("/run_pagerank")
+async def run_pagerank():
+	update_pagerank()
+	return True
+
+@app.get("/visualize_graph")
+async def visualize_graph():
+	graph_manip.update_mutex.acquire()		# acquire mutex lock
+
+	graph_manip.graph_tool.draw.graph_draw(
+		graph_manip.g, 
+		edge_pen_width=5,
+		vertex_text=graph_manip.node_text, 
+		vertex_aspect=1, 
+		vertex_text_position=1, 
+		vertex_text_color='black',
+		vertex_font_family='sans',
+		vertex_font_size=11,
+		vertex_color=None,
+		vertex_size=20,
+		output="new_graph.png"
+	)
+
+	graph_manip.update_mutex.release()		# release mutex lock
+
+	return True
+
+@app.get("/print_scores")
+async def print_scores():
+	graph_manip.update_mutex.acquire()		# acquire mutex lock
+
+	if graph_manip.page_rank is not None:
+		print("\nPageRank scores:")
+		for v in graph_manip.g.vertices():
+			print(f"{graph_manip.node_url[v]}: {graph_manip.page_rank[v]}")
+
+	graph_manip.update_mutex.release()		# release mutex lock
+
 	return True
 
 # Report metric is called by US.
@@ -63,8 +135,12 @@ async def update_metadata(evaluation_payload):
 
 # Updates page rank
 def update_pagerank():
+	global pagerank_call_count
 	# acquire mutex
 	graph_manip.update_mutex.acquire()
+
+	pagerank_call_count += 1
+	print(f"[PageRank Call: {pagerank_call_count}]")
 
 	graph_manip.page_rank = graph_manip.pagerank(graph_manip.g)
 
@@ -122,8 +198,20 @@ graph_manip.graph_tool.draw.graph_draw(
 if graph_manip.page_rank is not None:
 	print("\nPageRank scores:")
 	for v in graph_manip.g.vertices():
-		print(f"{graph_manip.node_url[v]}: {graph_manip.page_rank[v]}, {graph_manip.g.get_in_degrees([v])[0]}")
+		print(f"{graph_manip.node_url[v]}: {graph_manip.page_rank[v]}")
 
 
 				
-print("Doing good")
+print("Doing Good. Will start pagerank thread")
+
+
+################################################################################################################
+# Main Routine
+def main_routine():
+	while True:
+		update_pagerank()
+		time.sleep(60)
+
+t1 = threading.Thread(target=main_routine)
+
+t1.start()
