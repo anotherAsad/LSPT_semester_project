@@ -1,0 +1,38 @@
+{
+    "nodes": [
+        {
+            "id": 0,
+            "url": "www.google.com",
+            "page_rank": 0.2880500066452668,
+            "click_count": 15
+        },
+        {
+            "id": 1,
+            "url": "www.def.com",
+            "page_rank": 0.4005448410448267,
+            "click_count": 0
+        },
+        {
+            "id": 2,
+            "url": "www.rpi.edu",
+            "page_rank": 0.15570257615495325,
+            "click_count": 9
+        },
+        {
+            "id": 3,
+            "url": "www.boogle.com",
+            "page_rank": 0.15570257615495325,
+            "click_count": 0
+        }
+    ],
+    "edges": [
+        {
+            "source": 0,
+            "target": 1
+        },
+        {
+            "source": 2,
+            "target": 0
+        }
+    ]
+}
