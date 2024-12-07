@@ -149,7 +149,7 @@ def convert_subgraph_to_JSON(subg, prop, pg, ck):
     
     return graph_data
     
-# 
+# extract a subgraph from the bigger mother graph
 def get_subgraph(base_url, n):
     visited = set()
     
