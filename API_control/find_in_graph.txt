@@ -1,0 +1,53 @@
+Empty webgraph:
+find_in_graph(1): expected = not in graph, actual = not in graph
+find_in_graph(2): expected = not in graph, actual = not in graph
+find_in_graph(3): expected = not in graph, actual = not in graph
+find_in_graph(4): expected = not in graph, actual = not in graph
+find_in_graph(5): expected = not in graph, actual = not in graph
+find_in_graph(6): expected = not in graph, actual = not in graph
+find_in_graph(7): expected = not in graph, actual = not in graph
+find_in_graph(8): expected = not in graph, actual = not in graph
+find_in_graph(9): expected = not in graph, actual = not in graph
+find_in_graph(10): expected = not in graph, actual = not in graph
+
+Webgraph with only nodes:
+find_in_graph(1): expected = in graph, actual = in graph
+find_in_graph(2): expected = in graph, actual = in graph
+find_in_graph(3): expected = in graph, actual = in graph
+find_in_graph(4): expected = in graph, actual = in graph
+find_in_graph(5): expected = in graph, actual = in graph
+find_in_graph(6): expected = in graph, actual = in graph
+find_in_graph(7): expected = in graph, actual = in graph
+find_in_graph(8): expected = in graph, actual = in graph
+find_in_graph(9): expected = in graph, actual = in graph
+find_in_graph(10): expected = in graph, actual = in graph
+find_in_graph(11): expected = not in graph, actual = not in graph
+find_in_graph(12): expected = not in graph, actual = not in graph
+find_in_graph(13): expected = not in graph, actual = not in graph
+find_in_graph(14): expected = not in graph, actual = not in graph
+find_in_graph(15): expected = not in graph, actual = not in graph
+find_in_graph(16): expected = not in graph, actual = not in graph
+find_in_graph(17): expected = not in graph, actual = not in graph
+find_in_graph(18): expected = not in graph, actual = not in graph
+find_in_graph(19): expected = not in graph, actual = not in graph
+
+Webgraph with nodes and edges:
+find_in_graph(1): expected = in graph, actual = in graph
+find_in_graph(2): expected = in graph, actual = in graph
+find_in_graph(3): expected = in graph, actual = in graph
+find_in_graph(4): expected = in graph, actual = in graph
+find_in_graph(5): expected = in graph, actual = in graph
+find_in_graph(6): expected = in graph, actual = in graph
+find_in_graph(7): expected = in graph, actual = in graph
+find_in_graph(8): expected = in graph, actual = in graph
+find_in_graph(9): expected = in graph, actual = in graph
+find_in_graph(10): expected = in graph, actual = in graph
+find_in_graph(11): expected = not in graph, actual = not in graph
+find_in_graph(12): expected = not in graph, actual = not in graph
+find_in_graph(13): expected = not in graph, actual = not in graph
+find_in_graph(14): expected = not in graph, actual = not in graph
+find_in_graph(15): expected = not in graph, actual = not in graph
+find_in_graph(16): expected = not in graph, actual = not in graph
+find_in_graph(17): expected = not in graph, actual = not in graph
+find_in_graph(18): expected = not in graph, actual = not in graph
+find_in_graph(19): expected = not in graph, actual = not in graph
