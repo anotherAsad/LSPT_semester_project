@@ -1,0 +1,84 @@
+Empty webgraph:
+remove_node(0): expected = False, actual = False
+  Vertices: 
+  Edges: 
+remove_node(1): expected = False, actual = False
+  Vertices: 
+  Edges: 
+remove_node(2): expected = False, actual = False
+  Vertices: 
+  Edges: 
+remove_node(3): expected = False, actual = False
+  Vertices: 
+  Edges: 
+remove_node(4): expected = False, actual = False
+  Vertices: 
+  Edges: 
+
+Webgraph with only nodes:
+  Vertices: 0 | 1 | 2 | 3 | 4 | 
+  Edges: 
+remove_node(0): expected = True, actual = True
+  Vertices: 1 | 2 | 3 | 4 | 
+  Edges: 
+remove_node(1): expected = True, actual = True
+  Vertices: 2 | 3 | 4 | 
+  Edges: 
+remove_node(2): expected = True, actual = True
+  Vertices: 3 | 4 | 
+  Edges: 
+remove_node(3): expected = True, actual = True
+  Vertices: 4 | 
+  Edges: 
+remove_node(4): expected = True, actual = True
+  Vertices: 
+  Edges: 
+Reset graph
+  Vertices: 0 | 1 | 2 | 3 | 4 | 
+  Edges: 
+remove_node(5): expected = False, actual = False
+  Vertices: 0 | 1 | 2 | 3 | 4 | 
+  Edges: 
+remove_node(6): expected = False, actual = False
+  Vertices: 0 | 1 | 2 | 3 | 4 | 
+  Edges: 
+remove_node(7): expected = False, actual = False
+  Vertices: 0 | 1 | 2 | 3 | 4 | 
+  Edges: 
+remove_node(8): expected = False, actual = False
+  Vertices: 0 | 1 | 2 | 3 | 4 | 
+  Edges: 
+remove_node(9): expected = False, actual = False
+  Vertices: 0 | 1 | 2 | 3 | 4 | 
+  Edges: 
+
+Webgraph with nodes and edges:
+  Vertices: 0 | 1 | 2 | 
+  Edges: 0 -> 1 | 0 -> 2 | 1 -> 0 | 1 -> 2 | 2 -> 0 | 2 -> 1 | 
+remove_node(0): expected = True, actual = True
+  Vertices: 1 | 2 | 
+  Edges: 1 -> 2 | 2 -> 1 | 
+remove_node(1): expected = True, actual = True
+  Vertices: 2 | 
+  Edges: 
+remove_node(2): expected = True, actual = True
+  Vertices: 
+  Edges: 
+Reset graph
+  Vertices: 0 | 1 | 2 | 
+  Edges: 0 -> 1 | 0 -> 2 | 1 -> 0 | 1 -> 2 | 2 -> 0 | 2 -> 1 | 
+remove_node(5): expected = False, actual = False
+  Vertices: 0 | 1 | 2 | 
+  Edges: 0 -> 1 | 0 -> 2 | 1 -> 0 | 1 -> 2 | 2 -> 0 | 2 -> 1 | 
+remove_node(6): expected = False, actual = False
+  Vertices: 0 | 1 | 2 | 
+  Edges: 0 -> 1 | 0 -> 2 | 1 -> 0 | 1 -> 2 | 2 -> 0 | 2 -> 1 | 
+remove_node(7): expected = False, actual = False
+  Vertices: 0 | 1 | 2 | 
+  Edges: 0 -> 1 | 0 -> 2 | 1 -> 0 | 1 -> 2 | 2 -> 0 | 2 -> 1 | 
+remove_node(8): expected = False, actual = False
+  Vertices: 0 | 1 | 2 | 
+  Edges: 0 -> 1 | 0 -> 2 | 1 -> 0 | 1 -> 2 | 2 -> 0 | 2 -> 1 | 
+remove_node(9): expected = False, actual = False
+  Vertices: 0 | 1 | 2 | 
+  Edges: 0 -> 1 | 0 -> 2 | 1 -> 0 | 1 -> 2 | 2 -> 0 | 2 -> 1 | 

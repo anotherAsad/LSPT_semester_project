@@ -7,7 +7,6 @@ Tests:
 
 - Node in graph
 - Node not in graph
-- Other weird inputs (None, numbers, anything that isn't a string)
 """
 
 def node_in_graph_test(url, expected_result):
