@@ -11,6 +11,8 @@ import threading
 import asyncio
 import uvicorn
 
+import random
+
 app = FastAPI()
 
 pagerank_call_count = 0
