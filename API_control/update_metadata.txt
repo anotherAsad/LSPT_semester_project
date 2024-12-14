@@ -1,0 +1,36 @@
+Empty webgraph:
+  Vertices: 
+update_metadata_node(list_of_clicked_links=['www.google.com'] click_count=[1]): expected = False, actual = True
+  Vertices: 
+update_metadata_node(list_of_clicked_links=['www.rpi.edu'] click_count=[10]): expected = False, actual = True
+  Vertices: 
+
+Webgraph with only nodes:
+  Vertices: www.hi.com 0| www.google.com 100| www.rpi.edu 10| 
+update_metadata_node(list_of_clicked_links=['www.google.com'] click_count=[1]): expected = True, actual = True
+  Vertices: www.hi.com 0| www.google.com 101| www.rpi.edu 10| 
+update_metadata_node(list_of_clicked_links=['www.google.com', 'www.rpi.edu'] click_count=[10, 10]): expected = True, actual = True
+  Vertices: www.hi.com 0| www.google.com 111| www.rpi.edu 20| 
+Reset graph
+  Vertices: www.hi.com 0| www.google.com 100| www.rpi.edu 10| 
+update_metadata_node(list_of_clicked_links=['www.googly.com'] click_count=[1]): expected = True, actual = True
+  Vertices: www.hi.com 0| www.google.com 100| www.rpi.edu 10| 
+update_metadata_node(list_of_clicked_links=['www.googy.com', 'www.raspy.edu'] click_count=[10, 10]): expected = True, actual = True
+  Vertices: www.hi.com 0| www.google.com 100| www.rpi.edu 10| 
+
+Weird payloads:
+  Vertices: www.hi.com 0| www.google.com 100| www.rpi.edu 10| 
+ERR: graph_manip.update_metadata() expected equal list lengths
+update_metadata_node(list_of_clicked_links=['www.google.com', 'www.rpi.edu'] click_count=[1, 2, 3]): expected = False, actual = False
+  Vertices: www.hi.com 0| www.google.com 100| www.rpi.edu 10| 
+ERR: graph_manip.update_metadata() expected equal list lengths
+update_metadata_node(list_of_clicked_links=['www.google.com', 'www.rpi.edu'] click_count=[1]): expected = False, actual = False
+  Vertices: www.hi.com 0| www.google.com 100| www.rpi.edu 10| 
+ERR: graph_manip.update_metadata() expected equal list lengths
+update_metadata_node(list_of_clicked_links=['www.google.com', 'www.rpi.edu'] click_count=[]): expected = False, actual = False
+  Vertices: www.hi.com 0| www.google.com 100| www.rpi.edu 10| 
+ERR: graph_manip.update_metadata() expected equal list lengths
+update_metadata_node(list_of_clicked_links=[] click_count=[1, 2, 3]): expected = False, actual = False
+  Vertices: www.hi.com 0| www.google.com 100| www.rpi.edu 10| 
+update_metadata_node(list_of_clicked_links=[] click_count=[]): expected = True, actual = True
+  Vertices: www.hi.com 0| www.google.com 100| www.rpi.edu 10| 
